@@ -1,0 +1,97 @@
+import sys
+import math
+import numpy as np
+import pandas as pd
+from numpy import linalg as LA
+import matplotlib.pyplot as plt
+import random as ran
+
+def random(data):
+    np.random.shuffle(data)
+    train = []
+    test = []
+    for i in range(0, int(len(data) * 0.7)):
+        train.append(data[i])
+    for i in range(int(len(data) * 0.7 + 1), len(data)):
+        test.append(data[i])
+    return train, test
+
+
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+
+def predict(x, y, w):
+    # return the predit 0 or 1
+    x_aug = aug(x)
+    return sigmoid(np.matmul(x_aug, w)) >= 0.5
+
+
+def compute_acc(x, y, w):
+    return 1 - np.mean(abs(predict(x, y, w) - y))
+
+
+def fit(x, y, eta, eps, maxiter):
+    x_aug = np.array(aug(x))
+    weights = np.zeros(x_aug.shape[1])  # initial weight vector
+
+    i = 0
+    # For randomly going over the data
+    r = list(zip(x_aug, y))
+    ran.shuffle(r)
+    x_aug, y = zip(*r)
+    n = x.shape[0]
+    while i < maxiter:
+        i += 1
+        weight_norm_old = np.linalg.norm(weights)  # make a copy
+        for j in range(n):
+            x_tmp, y_tmp = x_aug[j], y[j]
+            tmp = sigmoid(np.dot(weights.T, x_tmp))
+            gradient = (y_tmp - tmp) * x_tmp  # compute the gradient
+            weights += eta * gradient  # update
+        if abs(np.linalg.norm(weights)-weight_norm_old) < eps:  # terminal condition
+            print("Within the defined maxiter, it is successfully convergent")
+            break
+    return weights
+
+
+def aug(x):
+    n, d = x.shape
+    x_aug = np.ones((n, d + 1))
+    x_aug[:, 1:] = x  # augment the data
+    return np.array(x_aug)
+
+if __name__ == '__main__':
+    file = "energydata_complete.csv"
+    with open(file) as f:
+        ncols = len(f.readline().split(','))
+    data = pd.read_csv(file, delimiter=',', skiprows=1, usecols=range(1, ncols - 1), header=None)
+    data = data.to_numpy()
+
+    for row in data:
+        if (row[0] <= 50):
+            row[0] = 1
+        else:
+            row[0] = 0
+    # -----------------------------------------------------
+    train, test = random(data)
+    train_x = np.array(train)[:, 1:]
+    train_y = np.array(train)[:, 0]
+    test_x = np.array(test)[:, 1:]
+    test_y = np.array(test)[:, 0]
+
+    w = fit(train_x, train_y, 0.00001, 0.0001, 1000000000)
+    print("The weight is : ", w)
+    p_train = list(predict(train_x, train_y, w) - train_y)
+    accurancy_train = p_train.count(0) / len(p_train)
+
+    p_test = list(predict(test_x, test_y, w) - test_y)
+    accurancy_test = p_test.count(0) / len(p_test)
+    print("The acccurancy for the training data is: ", accurancy_train)
+    print("The acccurancy for the test data is: ", accurancy_test)
+    '''
+    accurancy_train = compute_acc(train_x,train_y,w)
+    accurancy_test = compute_acc(test_x,test_y,w)
+    print("The acccurancy for the training data is: ", accurancy_train)
+    print("The acccurancy for the test data is: ", accurancy_test)
+    '''

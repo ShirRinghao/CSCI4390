@@ -1,0 +1,24 @@
+Part1:
+
+
+
+
+
+Part2:
+10 Dimensions
+Minimum value is: 1.2074182697257333e-06
+Maximum value is: 179.99999879258172
+Value range is: 179.99999758516344
+Mean is: 90.00938717659825, Variance is: 372.77407092024026
+
+100 Dimensions
+Minimum value is: 63.8961188626601
+Maximum value is: 114.83458748970159
+Value range is: 50.93846862704149
+Mean is: 90.00967688634027, Variance is: 33.19767061553111
+
+1000 Dimensions
+Minimum value is: 81.02520243060472
+Maximum value is: 98.16359419578697
+Value range is: 17.13839176518225
+Mean is: 89.99914326205678, Variance is: 3.2731604745001404
